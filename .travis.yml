@@ -14,17 +14,20 @@ jobs:
   include:
     - stage: build and publish
       language: java
-      jdk: openjdk11
+      jdk: openjdk8
       addons:
         mariadb: '10.2'
       install: skip
       before_script:
+        - chmod 777 gradlew
+        - chmod 777 databases/create_databases.sql
         - mysql -uroot < databases/create_databases.sql
         - ./gradlew testMigrate
       script:
         - APPLICATION=allocations
         - ./gradlew clean :applications:${APPLICATION}-server:build
       before_deploy:
+        - chmod 777 gradlew
         - git config --local user.name "Travis CI"
         - git config --local user.email "travis@example.com"
         - git tag -f $RELEASE_TAG
@@ -37,17 +40,20 @@ jobs:
 
     - stage: build and publish
       language: java
-      jdk: openjdk11
+      jdk: openjdk8
       addons:
         mariadb: '10.2'
       install: skip
       before_script:
+        - chmod 777 gradlew
+        - chmod 777 databases/create_databases.sql
         - mysql -uroot < databases/create_databases.sql
         - ./gradlew testMigrate
       script:
         - APPLICATION=backlog
         - ./gradlew clean :applications:${APPLICATION}-server:build
       before_deploy:
+        - chmod 777 gradlew
         - git config --local user.name "Travis CI"
         - git config --local user.email "travis@example.com"
         - git tag -f $RELEASE_TAG
@@ -56,17 +62,20 @@ jobs:
 
     - stage: build and publish
       language: java
-      jdk: openjdk11
+      jdk: openjdk8
       addons:
         mariadb: '10.2'
       install: skip
       before_script:
+        - chmod 777 gradlew
+        - chmod 777 databases/create_databases.sql
         - mysql -uroot < databases/create_databases.sql
         - ./gradlew testMigrate
       script:
         - APPLICATION=registration
         - ./gradlew clean :applications:${APPLICATION}-server:build
       before_deploy:
+        - chmod 777 gradlew
         - git config --local user.name "Travis CI"
         - git config --local user.email "travis@example.com"
         - git tag -f $RELEASE_TAG
@@ -75,17 +84,20 @@ jobs:
 
     - stage: build and publish
       language: java
-      jdk: openjdk11
+      jdk: openjdk8
       addons:
         mariadb: '10.2'
       install: skip
       before_script:
+        - chmod 777 gradlew
+        - chmod 777 databases/create_databases.sql
         - mysql -uroot < databases/create_databases.sql
         - ./gradlew testMigrate
       script:
         - APPLICATION=timesheets
         - ./gradlew clean :applications:${APPLICATION}-server:build
       before_deploy:
+        - chmod 777 gradlew
         - git config --local user.name "Travis CI"
         - git config --local user.email "travis@example.com"
         - git tag -f $RELEASE_TAG
@@ -95,9 +107,11 @@ jobs:
     - stage: deploy
       language: bash
       script:
+        - chmod 777 gradlew
         - echo "Downloading allocations server $RELEASE_TAG"
         - wget -P applications/allocations-server/build/libs https://github.com/$GITHUB_USERNAME/pal-tracker-distributed/releases/download/$RELEASE_TAG/allocations-server.jar
       before_deploy:
+        - chmod 777 gradlew
         - cp manifest-allocations.yml manifest.yml
         - echo "Deploying allocations server $RELEASE_TAG"
       deploy: &cloudfoundry
@@ -110,9 +124,11 @@ jobs:
     - stage: deploy
       language: bash
       script:
+        - chmod 777 gradlew
         - echo "Downloading backlog server $RELEASE_TAG"
         - wget -P applications/backlog-server/build/libs https://github.com/$GITHUB_USERNAME/pal-tracker-distributed/releases/download/$RELEASE_TAG/backlog-server.jar
       before_deploy:
+        - chmod 777 gradlew
         - cp manifest-backlog.yml manifest.yml
         - echo "Deploying backlog server $RELEASE_TAG"
       deploy:
@@ -120,9 +136,11 @@ jobs:
     - stage: deploy
       language: bash
       script:
+        - chmod 777 gradlew
         - echo "Downloading registration server $RELEASE_TAG"
         - wget -P applications/registration-server/build/libs https://github.com/$GITHUB_USERNAME/pal-tracker-distributed/releases/download/$RELEASE_TAG/registration-server.jar
       before_deploy:
+        - chmod 777 gradlew
         - cp manifest-registration.yml manifest.yml
         - echo "Deploying registration server $RELEASE_TAG"
       deploy:
@@ -130,9 +148,11 @@ jobs:
     - stage: deploy
       language: bash
       script:
+        - chmod 777 gradlew
         - echo "Downloading timesheets server $RELEASE_TAG"
         - wget -P applications/timesheets-server/build/libs https://github.com/$GITHUB_USERNAME/pal-tracker-distributed/releases/download/$RELEASE_TAG/timesheets-server.jar
       before_deploy:
+        - chmod 777 gradlew
         - cp manifest-timesheets.yml manifest.yml
         - echo "Deploying timesheets server $RELEASE_TAG"
       deploy:
@@ -140,6 +160,7 @@ jobs:
     - stage: migrate
       language: java
       before_install:
+        - chmod 777 gradlew
         - wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
         - echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
         - sudo apt-get update
